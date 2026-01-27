@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiMessageSquare, FiX, FiSend, FiMinimize2 } from 'react-icons/fi';
+import { FiMessageSquare, FiX, FiSend, FiMinimize2, FiLoader } from 'react-icons/fi'; // Added FiLoader
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import { chatWithAi } from '../../services/api';
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const Chatbot = () => {
         { id: 1, text: "Hello! Welcome to Aura Jewellery. How can I assist you today?", sender: 'bot' }
     ]);
     const [inputText, setInputText] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -18,27 +20,48 @@ const Chatbot = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, isLoading]);
 
-    const handleSend = (e) => {
+    const handleSend = async (e) => {
         e.preventDefault();
         if (!inputText.trim()) return;
 
-        const userMessage = { id: Date.now(), text: inputText, sender: 'user' };
+        const userText = inputText;
+        const userMessage = { id: Date.now(), text: userText, sender: 'user' };
+
         setMessages(prev => [...prev, userMessage]);
         setInputText('');
+        setIsLoading(true);
 
-        // Mock Bot Response
-        setTimeout(() => {
-            let botText = "Thank you for your message. One of our concierges will get back to you shortly.";
-            if (inputText.toLowerCase().includes('order')) {
-                botText = "To track an order, please visit our Support page or provide your Order ID.";
-            } else if (inputText.toLowerCase().includes('return')) {
-                botText = "You can request a return within 30 days of purchase via our Support page.";
-            }
+        try {
+            // Map messages to Gemini history format
+            // Limit history to last 10 turns to avoid token limits if necessary
+            // Filter out the initial welcome message (id: 1) or any leading bot messages to ensure history starts with 'user'
+            const history = messages
+                .filter(msg => msg.id !== 1) // Remove initial welcome message
+                .slice(-19) // Keep last ~20 messages (excluding current user message which is separate)
+                .map(msg => ({
+                    role: msg.sender === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                }));
 
-            setMessages(prev => [...prev, { id: Date.now() + 1, text: botText, sender: 'bot' }]);
-        }, 1000);
+            const data = await chatWithAi(userText, history);
+
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                text: data.text,
+                sender: 'bot'
+            }]);
+        } catch (error) {
+            console.error('Chat Error:', error);
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                text: "I apologize, but I'm having trouble connecting at the moment. Please try again later.",
+                sender: 'bot'
+            }]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -81,12 +104,23 @@ const Chatbot = () => {
                             {messages.map((msg) => (
                                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div
-                                        className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-black text-white rounded-br-none' : 'bg-white border border-neutral-200 text-neutral-800 rounded-bl-none shadow-sm'}`}
+                                        className={`max-w-[85%] rounded-lg p-3 text-sm whitespace-pre-wrap ${msg.sender === 'user' ? 'bg-black text-white rounded-br-none' : 'bg-white border border-neutral-200 text-neutral-800 rounded-bl-none shadow-sm'}`}
                                     >
                                         {msg.text}
                                     </div>
                                 </div>
                             ))}
+                            {isLoading && (
+                                <div className="flex justify-start">
+                                    <div className="bg-white border border-neutral-200 p-3 rounded-lg rounded-bl-none shadow-sm">
+                                        <div className="flex gap-1">
+                                            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             <div ref={messagesEndRef} />
                         </div>
 
@@ -98,10 +132,15 @@ const Chatbot = () => {
                                     value={inputText}
                                     onChange={(e) => setInputText(e.target.value)}
                                     placeholder="Type a message..."
-                                    className="flex-1 border-neutral-300 rounded-md focus:ring-black focus:border-black text-sm"
+                                    disabled={isLoading}
+                                    className="flex-1 border-neutral-300 rounded-md focus:ring-black focus:border-black text-sm disabled:opacity-50"
                                 />
-                                <button type="submit" className="bg-black text-white p-2 rounded-md hover:bg-neutral-800 transition">
-                                    <FiSend />
+                                <button
+                                    type="submit"
+                                    disabled={isLoading || !inputText.trim()}
+                                    className="bg-black text-white p-2 rounded-md hover:bg-neutral-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? <FiLoader className="animate-spin" /> : <FiSend />}
                                 </button>
                             </form>
                         </div>

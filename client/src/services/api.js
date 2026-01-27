@@ -31,4 +31,9 @@ api.interceptors.response.use(
     }
 );
 
+export const chatWithAi = async (message, history) => {
+    const response = await api.post('/api/chat', { message, history });
+    return response.data;
+};
+
 export default api;

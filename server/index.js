@@ -11,11 +11,15 @@ app.use(express.json());
 app.use(cors());
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/aura_jewellery')
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected Successfully'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
+// const productRoutes = require('./routes/productRoutes'); // Removed as file does not exist
+const chatRoutes = require('./routes/chatRoutes');
+
 // Routes
+app.use('/api/chat', chatRoutes);
 app.get('/', (req, res) => {
     res.send('Aura Jewellery API is running...');
 });
