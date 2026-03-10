@@ -20,6 +20,11 @@ const productSchema = new mongoose.Schema({
         required: true,
         enum: ['Necklaces', 'Earrings', 'Rings', 'Bracelets', 'Bangles', 'Sets']
     },
+    gender: {
+        type: String,
+        enum: ['Men', 'Women'],
+        default: 'Women'
+    },
     material: {
         type: String,
         required: true,

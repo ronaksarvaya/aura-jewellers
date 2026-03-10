@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import FilterSidebar from '../components/shop/FilterSidebar';
 import ProductCard from '../components/product/ProductCard';
 import { FiFilter, FiX } from 'react-icons/fi';
@@ -16,6 +17,34 @@ const PRODUCTS = [
 
 const Shop = () => {
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [genderMode, setGenderMode] = useState('All');
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                let url = 'http://localhost:5000/api/products';
+                if (genderMode !== 'All') {
+                    url += `?gender=${genderMode}`;
+                }
+                const response = await axios.get(url);
+                // Map API data to the format ProductCard expects
+                const formattedProducts = response.data.map(p => ({
+                    id: p._id,
+                    name: p.name,
+                    category: p.category,
+                    price: p.price,
+                    image: p.images && p.images.length > 0 ? p.images[0].url : 'https://placehold.co/400x400/e5e4e2/black?text=Product',
+                    isNew: p.isNewArrival
+                }));
+                setProducts(formattedProducts);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+
+        fetchProducts();
+    }, [genderMode]);
 
     return (
         <div className="min-h-screen bg-white pb-20 pt-[80px]">
@@ -40,9 +69,37 @@ const Shop = () => {
                     {/* Main Content */}
                     <div className="flex-1">
                         {/* Toolbar */}
-                        <div className="flex items-center justify-between mb-8">
-                            <p className="text-neutral-500 text-sm">{PRODUCTS.length} Products</p>
-                            <div className="flex items-center gap-4">
+                        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-8">
+                            {/* Left Side: Gender Filter & Product Count */}
+                            <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                <p className="text-neutral-500 text-sm hidden md:block">
+                                    {products.length} Products
+                                </p>
+                                {/* Gender Switcher */}
+                                <div className="flex bg-neutral-100 p-1 rounded-sm w-full md:w-auto mt-2 md:mt-0">
+                                    <button
+                                        className={`flex-1 md:flex-none px-6 py-1.5 text-sm font-medium rounded-sm transition-all duration-200 ${genderMode === 'All' ? 'bg-white shadow-sm text-black' : 'text-neutral-500 hover:text-black hover:bg-white/50'}`}
+                                        onClick={() => setGenderMode('All')}
+                                    >
+                                        All
+                                    </button>
+                                    <button
+                                        className={`flex-1 md:flex-none px-6 py-1.5 text-sm font-medium rounded-sm transition-all duration-200 ${genderMode === 'Men' ? 'bg-white shadow-sm text-black' : 'text-neutral-500 hover:text-black hover:bg-white/50'}`}
+                                        onClick={() => setGenderMode('Men')}
+                                    >
+                                        Men
+                                    </button>
+                                    <button
+                                        className={`flex-1 md:flex-none px-6 py-1.5 text-sm font-medium rounded-sm transition-all duration-200 ${genderMode === 'Women' ? 'bg-white shadow-sm text-black' : 'text-neutral-500 hover:text-black hover:bg-white/50'}`}
+                                        onClick={() => setGenderMode('Women')}
+                                    >
+                                        Women
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Right Side: Filters & Sort */}
+                            <div className="flex items-center justify-between md:justify-end gap-4">
                                 {/* Mobile Filter Button */}
                                 <button
                                     className="lg:hidden flex items-center gap-2 text-sm font-medium"
@@ -50,6 +107,8 @@ const Shop = () => {
                                 >
                                     <FiFilter /> Filters
                                 </button>
+                                {/* Mobile Product Count */}
+                                <p className="md:hidden text-neutral-500 text-sm">{products.length} Products</p>
 
                                 {/* Sort Dropdown (Simple) */}
                                 <select className="text-sm border-none focus:ring-0 bg-transparent font-medium cursor-pointer">
@@ -63,9 +122,15 @@ const Shop = () => {
 
                         {/* Product Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-                            {PRODUCTS.map(product => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
+                            {products.length === 0 ? (
+                                <div className="col-span-full py-12 text-center text-neutral-500">
+                                    No products found.
+                                </div>
+                            ) : (
+                                products.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))
+                            )}
                         </div>
 
                         {/* Pagination (Simple) */}
@@ -83,24 +148,26 @@ const Shop = () => {
             </div>
 
             {/* Mobile Filters Modal */}
-            {showMobileFilters && (
-                <div className="fixed inset-0 z-50 flex lg:hidden">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileFilters(false)} />
-                    <div className="relative w-[80%] max-w-sm ml-auto bg-white h-full shadow-2xl overflow-y-auto">
-                        <div className="p-6 flex items-center justify-between border-b border-neutral-100">
-                            <h3 className="text-xl font-serif font-bold">Filters</h3>
-                            <button onClick={() => setShowMobileFilters(false)}><FiX className="h-6 w-6" /></button>
-                        </div>
-                        <div className="p-6">
-                            <FilterSidebar />
-                            <div className="mt-8 pt-6 border-t border-neutral-100">
-                                <Button fullWidth onClick={() => setShowMobileFilters(false)}>Show Results</Button>
+            {
+                showMobileFilters && (
+                    <div className="fixed inset-0 z-50 flex lg:hidden">
+                        <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileFilters(false)} />
+                        <div className="relative w-[80%] max-w-sm ml-auto bg-white h-full shadow-2xl overflow-y-auto">
+                            <div className="p-6 flex items-center justify-between border-b border-neutral-100">
+                                <h3 className="text-xl font-serif font-bold">Filters</h3>
+                                <button onClick={() => setShowMobileFilters(false)}><FiX className="h-6 w-6" /></button>
+                            </div>
+                            <div className="p-6">
+                                <FilterSidebar />
+                                <div className="mt-8 pt-6 border-t border-neutral-100">
+                                    <Button fullWidth onClick={() => setShowMobileFilters(false)}>Show Results</Button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 
