@@ -15,10 +15,11 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected Successfully'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
-// const productRoutes = require('./routes/productRoutes'); // Removed as file does not exist
+const productRoutes = require('./routes/productRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 // Routes
+app.use('/api/products', productRoutes);
 app.use('/api/chat', chatRoutes);
 app.get('/', (req, res) => {
     res.send('Aura Jewellery API is running...');

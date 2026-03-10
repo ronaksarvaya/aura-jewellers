@@ -71,6 +71,30 @@ const sampleProducts = [
         occasion: "Daily Wear",
         stock: 20,
         images: [{ url: "https://placehold.co/400x400/b76e79/white?text=Rose+Gold+Bangles", alt: "Rose Gold Bangles" }]
+    },
+    {
+        name: "Men's Classic Platinum Band",
+        description: "A bold and elegant platinum band designed for men.",
+        price: 45000,
+        category: "Rings",
+        gender: "Men",
+        material: "Platinum",
+        gemstone: "None",
+        occasion: "Wedding",
+        stock: 15,
+        images: [{ url: "https://placehold.co/400x400/e5e4e2/black?text=Men+Platinum+Band", alt: "Men Platinum Band" }]
+    },
+    {
+        name: "Women's Diamond Solitaire Necklace",
+        description: "Exquisite diamond solitaire necklace for women.",
+        price: 85000,
+        category: "Necklaces",
+        gender: "Women",
+        material: "Gold",
+        gemstone: "Diamond",
+        occasion: "Party",
+        stock: 10,
+        images: [{ url: "https://placehold.co/400x400/gold/white?text=Women+Diamond+Necklace", alt: "Women Diamond Necklace" }]
     }
 ];
 

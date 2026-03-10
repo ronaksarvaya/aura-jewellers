@@ -18,6 +18,8 @@ const handleChat = async (req, res) => {
             .select('name description price category material gemstone occasion stock isNewArrival isBestSeller')
             .lean();
 
+        console.log("products data", products)
+
         // Construct System Prompt
         const systemInstruction = `
 You are Aura, the AI Concierge for Aura Jewellery. Your goal is to assist customers in finding the perfect jewellery piece.
@@ -48,8 +50,12 @@ ${JSON.stringify(products, null, 2)}
         });
 
         const result = await chat.sendMessage(message);
+
+        console.log("result", result)
         const response = await result.response;
         const text = response.text();
+
+        console.log("test", text)
 
         res.json({ text });
 

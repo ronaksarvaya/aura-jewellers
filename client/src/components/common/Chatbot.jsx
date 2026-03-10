@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiMessageSquare, FiX, FiSend, FiMinimize2, FiLoader } from 'react-icons/fi'; // Added FiLoader
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import { chatWithAi } from '../../services/api';
@@ -106,7 +107,21 @@ const Chatbot = () => {
                                     <div
                                         className={`max-w-[85%] rounded-lg p-3 text-sm whitespace-pre-wrap ${msg.sender === 'user' ? 'bg-black text-white rounded-br-none' : 'bg-white border border-neutral-200 text-neutral-800 rounded-bl-none shadow-sm'}`}
                                     >
-                                        {msg.text}
+                                        {msg.sender === 'bot' ? (
+                                            <ReactMarkdown
+                                                components={{
+                                                    p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                                                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                                                    strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />
+                                                }}
+                                            >
+                                                {msg.text}
+                                            </ReactMarkdown>
+                                        ) : (
+                                            msg.text
+                                        )}
                                     </div>
                                 </div>
                             ))}
