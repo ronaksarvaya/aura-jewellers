@@ -23,7 +23,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                let url = 'http://localhost:5000/api/products';
+                let url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/products';
                 if (genderMode !== 'All') {
                     url += `?gender=${genderMode}`;
                 }
