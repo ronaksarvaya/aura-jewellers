@@ -15,6 +15,7 @@ import Support from './pages/Support';
 import Admin from './pages/Admin';
 import { AuthProvider } from './context/AuthContext';
 import RequireAuth from './components/common/RequireAuth';
+import RequireAdmin from './components/common/RequireAdmin';
 
 function App() {
   return (
@@ -24,7 +25,13 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
-        <Route path="/admin" element={<Admin />} />
+
+        {/* Admin Route */}
+        <Route path="/admin/*" element={
+          <RequireAdmin>
+            <Admin />
+          </RequireAdmin>
+        } />
 
         {/* Protected Routes (Everything else) */}
         <Route element={

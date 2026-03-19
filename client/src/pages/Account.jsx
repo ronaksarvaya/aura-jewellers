@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
-import { FiPackage, FiUser, FiHeart, FiLogOut } from 'react-icons/fi';
+import { FiPackage, FiUser, FiHeart, FiLogOut, FiGift } from 'react-icons/fi';
+import { useHamper } from '../context/HamperContext';
+import { useCart } from '../context/CartContext';
 
 const Account = () => {
     const [activeTab, setActiveTab] = useState('profile');
+    const { savedHampers, deleteHamper } = useHamper();
+    const { addToCart } = useCart();
 
     return (
         <div className="min-h-screen bg-neutral-50 py-12 md:py-20">
@@ -32,6 +36,12 @@ const Account = () => {
                                 className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${activeTab === 'wishlist' ? 'bg-black text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
                             >
                                 <FiHeart className="w-4 h-4" /> Wishlist
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('hampers')}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${activeTab === 'hampers' ? 'bg-black text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
+                            >
+                                <FiGift className="w-4 h-4" /> My Hampers
                             </button>
                             <div className="pt-4 border-t border-neutral-100 mt-2">
                                 <button className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 w-full">
@@ -88,6 +98,56 @@ const Account = () => {
                             <div>
                                 <h2 className="text-xl font-serif font-bold border-b border-neutral-100 pb-4">My Wishlist</h2>
                                 <p className="text-neutral-500 mt-4">Your wishlist is empty.</p>
+                            </div>
+                        )}
+
+                        {activeTab === 'hampers' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-serif font-bold border-b border-neutral-100 pb-4">Saved Hampers</h2>
+                                {(!savedHampers || savedHampers.length === 0) ? (
+                                    <p className="text-neutral-500 mt-4">You have no saved hampers.</p>
+                                ) : (
+                                    savedHampers.map((hamper) => (
+                                        <div key={hamper.id} className="border border-neutral-200 rounded-sm p-6">
+                                            <div className="flex flex-wrap justify-between items-center mb-4 pb-4 border-b border-neutral-100">
+                                                <div>
+                                                    <p className="font-bold text-lg font-serif">{hamper.name}</p>
+                                                    {hamper.note && <p className="text-sm text-neutral-500 italic mt-1">"{hamper.note}"</p>}
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-sm font-medium mr-2">Total:</span>
+                                                    <span className="font-bold text-lg text-charcoal">₹{hamper.totalPrice.toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-3 mb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <img src={hamper.box?.image} alt={hamper.box?.name} className="w-12 h-12 object-cover rounded-sm border border-neutral-200" />
+                                                    <p className="text-sm flex-1 font-medium">{hamper.box?.name}</p>
+                                                    <p className="text-sm text-neutral-500">₹{hamper.box?.price}</p>
+                                                </div>
+                                                {hamper.items.map(item => (
+                                                    <div key={item.id} className="flex items-center gap-4">
+                                                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-sm border border-neutral-200" />
+                                                        <p className="text-sm flex-1 font-medium">{item.name}</p>
+                                                        <p className="text-sm text-neutral-500">₹{item.price}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="mt-4 pt-4 border-t border-neutral-100 flex justify-end gap-4">
+                                                <Button variant="outline" onClick={() => deleteHamper(hamper.id)}>Delete</Button>
+                                                <Button onClick={() => addToCart({
+                                                    id: hamper.id,
+                                                    name: hamper.name,
+                                                    price: hamper.totalPrice,
+                                                    image: hamper.image || '',
+                                                    isHamper: true,
+                                                    note: hamper.note,
+                                                    items: hamper.items
+                                                }, 1, { size: 'Custom', metal: 'Mixed' })}>Add to Cart</Button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         )}
                     </div>

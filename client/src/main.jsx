@@ -5,12 +5,15 @@ import App from './App.jsx'
 import './index.css'
 
 import { CartProvider } from './context/CartContext';
+import { HamperProvider } from './context/HamperContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <CartProvider>
-        <App />
+        <HamperProvider>
+          <App />
+        </HamperProvider>
       </CartProvider>
     </BrowserRouter>
   </React.StrictMode>,

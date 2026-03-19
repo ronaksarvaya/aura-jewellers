@@ -1,22 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
+import Input from '../components/common/Input';
 import { FiCheck, FiGift } from 'react-icons/fi';
+import { useHamper } from '../context/HamperContext';
+import { useCart } from '../context/CartContext';
 
 const GiftHamper = () => {
+    const { saveHamper } = useHamper();
+    const { addToCart } = useCart();
+    const navigate = useNavigate();
+
     const [step, setStep] = useState(1);
     const [selectedBox, setSelectedBox] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [hamperName, setHamperName] = useState('My Custom Hamper');
+    const [hamperNote, setHamperNote] = useState('');
 
     const boxes = [
-        { id: 1, name: 'Signature Black Box', price: 20, image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=2115&auto=format&fit=crop' },
-        { id: 2, name: 'Velvet Rose Box', price: 35, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop' }
+        { id: 'box-1', name: 'Signature Black Box', price: 20, image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=2115&auto=format&fit=crop' },
+        { id: 'box-2', name: 'Velvet Rose Box', price: 35, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop' }
     ];
 
-    const products = [
-        { id: 101, name: 'Ethereal Diamond Ring', price: 1250, image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=2070&auto=format&fit=crop' },
-        { id: 103, name: 'Pearl Drop Earrings', price: 450, image: 'https://images.unsplash.com/photo-1535632787350-4e48bc094aa9?q=80&w=1974&auto=format&fit=crop' },
-        { id: 102, name: 'Golden Sun Necklace', price: 890, image: 'https://images.unsplash.com/photo-1599643477877-5313557d80fe?q=80&w=1974&auto=format&fit=crop' },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                let url = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/products` : 'http://localhost:5000/api/products';
+                const response = await axios.get(url);
+                const formattedProducts = response.data.map(p => ({
+                    id: p._id,
+                    name: p.name,
+                    price: p.price,
+                    image: p.images && p.images.length > 0 ? p.images[0].url : 'https://placehold.co/400x400/e5e4e2/black?text=Product'
+                }));
+                // Show a mix of products for the hamper selection
+                setProducts(formattedProducts.slice(0, 9));
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const toggleItem = (item) => {
         if (selectedItems.find(i => i.id === item.id)) {
@@ -24,6 +50,36 @@ const GiftHamper = () => {
         } else {
             setSelectedItems([...selectedItems, item]);
         }
+    };
+
+    const calculateTotal = () => {
+        return (selectedBox?.price || 0) + selectedItems.reduce((acc, i) => acc + i.price, 0);
+    };
+
+    const handleSaveHamper = () => {
+        saveHamper({
+            name: hamperName,
+            note: hamperNote,
+            box: selectedBox,
+            items: selectedItems,
+            totalPrice: calculateTotal(),
+            image: selectedBox?.image
+        });
+        navigate('/account');
+    };
+
+    const handleAddToCart = () => {
+        const uniqueId = 'hamper_' + Date.now();
+        addToCart({
+            id: uniqueId,
+            name: hamperName || 'Custom Gift Hamper',
+            price: calculateTotal(),
+            image: selectedBox?.image || '',
+            isHamper: true,
+            note: hamperNote,
+            items: selectedItems
+        }, 1, { size: 'Custom', metal: 'Mixed' });
+        navigate('/cart');
     };
 
     return (
@@ -45,7 +101,7 @@ const GiftHamper = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-sm shadow-sm p-8 max-w-5xl mx-auto">
+                <div className="bg-white rounded-sm shadow-sm p-4 md:p-8 max-w-5xl mx-auto">
                     {step === 1 && (
                         <div>
                             <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Your Packaging</h2>
@@ -75,31 +131,35 @@ const GiftHamper = () => {
                     {step === 2 && (
                         <div>
                             <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Jewellery Items</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                {products.map(product => {
-                                    const isSelected = selectedItems.find(i => i.id === product.id);
-                                    return (
-                                        <div
-                                            key={product.id}
-                                            className={`relative cursor-pointer border rounded-sm overflow-hidden transition-all ${isSelected ? 'border-black' : 'border-neutral-200'}`}
-                                            onClick={() => toggleItem(product)}
-                                        >
-                                            {isSelected && (
-                                                <div className="absolute top-2 right-2 z-10 bg-black text-white rounded-full p-1">
-                                                    <FiCheck className="w-4 h-4" />
+                            {products.length === 0 ? (
+                                <p className="text-center py-8 text-neutral-500">Loading mastercrafted pieces...</p>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                                    {products.map(product => {
+                                        const isSelected = selectedItems.find(i => i.id === product.id);
+                                        return (
+                                            <div
+                                                key={product.id}
+                                                className={`relative cursor-pointer border rounded-sm overflow-hidden transition-all ${isSelected ? 'border-black ring-1 ring-black shadow-md' : 'border-neutral-200 hover:border-neutral-300'}`}
+                                                onClick={() => toggleItem(product)}
+                                            >
+                                                {isSelected && (
+                                                    <div className="absolute top-2 right-2 z-10 bg-black text-white rounded-full p-1">
+                                                        <FiCheck className="w-4 h-4" />
+                                                    </div>
+                                                )}
+                                                <div className="h-40 md:h-48 bg-neutral-100">
+                                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                                                 </div>
-                                            )}
-                                            <div className="h-48 bg-neutral-100">
-                                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                <div className="p-3 md:p-4 bg-white">
+                                                    <h3 className="font-medium text-xs md:text-sm truncate">{product.name}</h3>
+                                                    <p className="text-neutral-500 text-xs md:text-sm mt-1">₹{product.price}</p>
+                                                </div>
                                             </div>
-                                            <div className="p-4">
-                                                <h3 className="font-medium text-sm">{product.name}</h3>
-                                                <p className="text-neutral-500 text-sm">₹{product.price}</p>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
                             <div className="mt-8 flex justify-between">
                                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
                                 <Button onClick={() => setStep(3)} disabled={selectedItems.length === 0}>Next: Review</Button>
@@ -108,32 +168,62 @@ const GiftHamper = () => {
                     )}
 
                     {step === 3 && (
-                        <div className="text-center max-w-lg mx-auto">
-                            <FiGift className="w-16 h-16 mx-auto mb-6 text-neutral-900" />
-                            <h2 className="text-2xl font-serif font-bold mb-6">Hamper Summary</h2>
+                        <div className="max-w-2xl mx-auto">
+                            <div className="text-center mb-8">
+                                <FiGift className="w-16 h-16 mx-auto mb-4 text-neutral-900" />
+                                <h2 className="text-2xl font-serif font-bold">Personalize & Review</h2>
+                                <p className="text-neutral-500 mt-2">Almost exactly how you imagined.</p>
+                            </div>
 
-                            <div className="bg-neutral-50 p-6 rounded-sm text-left mb-8 space-y-4">
-                                <div className="flex justify-between font-medium">
-                                    <span>Packaging: {selectedBox?.name}</span>
-                                    <span>₹{selectedBox?.price}</span>
+                            <div className="bg-white border border-neutral-200 p-6 rounded-sm mb-8 space-y-6">
+                                <div>
+                                    <Input 
+                                        label="Hamper Name" 
+                                        value={hamperName} 
+                                        onChange={(e) => setHamperName(e.target.value)}
+                                        placeholder="E.g., Wedding Gift for Sarah"
+                                    />
                                 </div>
-                                <div className="border-t border-neutral-200 pt-4 space-y-2">
-                                    {selectedItems.map(item => (
-                                        <div key={item.id} className="flex justify-between text-sm text-neutral-600">
-                                            <span>{item.name}</span>
-                                            <span>₹{item.price}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="border-t border-neutral-200 pt-4 flex justify-between font-bold text-lg">
-                                    <span>Total</span>
-                                    <span>₹{(selectedBox?.price || 0) + selectedItems.reduce((acc, i) => acc + i.price, 0)}</span>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-neutral-900">Personal Note (Optional)</label>
+                                    <textarea 
+                                        className="w-full border border-neutral-200 rounded-sm px-4 py-2 text-sm focus:outline-none focus:border-charcoal focus:ring-1 focus:ring-charcoal transition-colors bg-white min-h-[100px]"
+                                        value={hamperNote}
+                                        onChange={(e) => setHamperNote(e.target.value)}
+                                        placeholder="Add a heartfelt message..."
+                                    />
                                 </div>
                             </div>
 
-                            <div className="flex justify-between">
+                            <div className="bg-neutral-50 p-6 rounded-sm mb-8">
+                                <h3 className="font-bold mb-4 font-serif text-lg">Hamper Contents</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between font-medium text-sm border-b border-neutral-200 pb-3">
+                                        <span>Packaging: {selectedBox?.name}</span>
+                                        <span>₹{selectedBox?.price}</span>
+                                    </div>
+                                    <div className="pt-2 space-y-3 border-b border-neutral-200 pb-4">
+                                        {selectedItems.map(item => (
+                                            <div key={item.id} className="flex gap-4 items-center">
+                                                <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-sm border border-neutral-200" />
+                                                <span className="flex-1 text-sm font-medium">{item.name}</span>
+                                                <span className="text-sm">₹{item.price}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="pt-2 flex justify-between font-bold text-xl text-neutral-900">
+                                        <span>Total</span>
+                                        <span>₹{calculateTotal()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row justify-between gap-4">
                                 <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
-                                <Button>Add Hamper to Cart</Button>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <Button variant="outline" onClick={handleSaveHamper}>Save for Later</Button>
+                                    <Button onClick={handleAddToCart}>Add to Cart - ₹{calculateTotal()}</Button>
+                                </div>
                             </div>
                         </div>
                     )}

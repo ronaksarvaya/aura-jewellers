@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
         const mockUser = {
             id: '1',
             email,
-            name: 'Jane Doe',
+            name: email === 'admin@aura.com' ? 'Admin User' : 'Jane Doe',
+            role: email === 'admin@aura.com' ? 'admin' : 'customer',
             profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150'
         };
         setUser(mockUser);
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }) => {
             id: '2',
             email: userData.email,
             name: `${userData.firstName} ${userData.lastName}`,
+            role: userData.email === 'admin@aura.com' ? 'admin' : 'customer',
             profileImage: null
         };
         setUser(mockUser);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/common/Input';
@@ -7,12 +7,18 @@ import Button from '../components/common/Button';
 const SignIn = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
+    
+    const [email, setEmail] = useState('jane@example.com');
+    const [password, setPassword] = useState('password');
 
     const handleLogin = (e) => {
         e.preventDefault();
-        // Mock login call
-        login('jane@example.com', 'password');
-        navigate('/home');
+        login(email, password);
+        if (email === 'admin@aura.com') {
+            navigate('/admin');
+        } else {
+            navigate('/home');
+        }
     };
 
     return (
@@ -38,8 +44,20 @@ const SignIn = () => {
                     <p className="text-neutral-500 mb-8">Please enter your details to sign in.</p>
 
                     <form className="space-y-6" onSubmit={handleLogin}>
-                        <Input label="Email" type="email" placeholder="jane@example.com" defaultValue="jane@example.com" />
-                        <Input label="Password" type="password" placeholder="••••••••" defaultValue="password" />
+                        <Input 
+                            label="Email" 
+                            type="email" 
+                            placeholder="admin@aura.com" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <Input 
+                            label="Password" 
+                            type="password" 
+                            placeholder="••••••••" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
 
                         <div className="flex items-center justify-between text-sm">
                             <label className="flex items-center space-x-2 cursor-pointer">
