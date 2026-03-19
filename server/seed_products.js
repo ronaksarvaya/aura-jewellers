@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
@@ -100,7 +100,13 @@ const sampleProducts = [
 
 const seedDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+            maxPoolSize: 10,
+            retryWrites: true,
+            w: 'majority',
+        });
         console.log('Connected to MongoDB for seeding...');
 
         const count = await Product.countDocuments();
