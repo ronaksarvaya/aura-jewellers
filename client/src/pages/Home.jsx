@@ -8,8 +8,8 @@ import { motion } from 'framer-motion';
 // Mock Data for New Arrivals
 const newArrivals = [
     { id: 101, name: 'Ethereal Diamond Ring', category: 'Rings', price: 1250, image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=2070&auto=format&fit=crop', isNew: true },
-    { id: 102, name: 'Golden Sun Necklace', category: 'Necklaces', price: 890, image: 'https://images.unsplash.com/photo-1599643477877-5313557d80fe?q=80&w=1974&auto=format&fit=crop', isNew: true },
-    { id: 103, name: 'Pearl Drop Earrings', category: 'Earrings', price: 450, image: 'https://images.unsplash.com/photo-1535632787350-4e48bc094aa9?q=80&w=1974&auto=format&fit=crop', isNew: true },
+    { id: 102, name: 'Golden Sun Necklace', category: 'Necklaces', price: 890, image: 'golden-sun-necklace.avif', isNew: true },
+    { id: 103, name: 'Pearl Drop Earrings', category: 'Earrings', price: 450, image: 'pearl-drop.avif', isNew: true },
     { id: 104, name: 'Sapphire Bracelet', category: 'Bracelets', price: 1500, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop', isNew: false },
 ];
 

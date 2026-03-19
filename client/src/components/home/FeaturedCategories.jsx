@@ -6,7 +6,7 @@ const categories = [
     {
         id: 1,
         name: 'Necklaces',
-        image: 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=1974&auto=format&fit=crop',
+        image: 'necklace-unsplash.jpg',
         link: '/shop/necklaces'
     },
     {
