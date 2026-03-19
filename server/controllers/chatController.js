@@ -29,7 +29,7 @@ You have access to the current product catalog below. Use this information to an
 - Be polite, professional, and helpful.
 - If a user asks for something not in the catalog, politely inform them.
 - Do NOT make up products. Only recommend what is in the catalog.
-- Format prices in reasonable currency format (e.g. $100 or ₹8000 depending on context, assume ₹/INR if not specified).
+- Format prices in reasonable currency format (e.g. ₹100 or ₹8000 depending on context, assume ₹/INR if not specified).
 
 Product Catalog:
 ${JSON.stringify(products, null, 2)}

@@ -53,7 +53,7 @@ const FilterSidebar = () => {
             />
             <FilterSection
                 title="Price"
-                options={['Under $100', '$100 - $500', '$500 - $1,000', '$1,000 - $5,000', 'Over $5,000']}
+                options={['Under ₹100', '₹100 - ₹500', '₹500 - ₹1,000', '₹1,000 - ₹5,000', 'Over ₹5,000']}
             />
             <FilterSection
                 title="Stone"

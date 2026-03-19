@@ -44,7 +44,7 @@ const Cart = () => {
                                     <div>
                                         <Link to={`/product/${item.id}`} className="font-medium text-neutral-900 hover:text-amber-700 transition">{item.name}</Link>
                                         <p className="text-sm text-neutral-500 mt-1">{item.metal}, Size {item.size}</p>
-                                        <p className="md:hidden text-sm font-medium mt-1">${item.price.toLocaleString()}</p>
+                                        <p className="md:hidden text-sm font-medium mt-1">₹{item.price.toLocaleString()}</p>
                                     </div>
                                 </div>
 
@@ -59,7 +59,7 @@ const Cart = () => {
 
                                 {/* Total */}
                                 <div className="hidden md:block col-span-2 text-right font-medium">
-                                    ${(item.price * item.quantity).toLocaleString()}
+                                    ₹{(item.price * item.quantity).toLocaleString()}
                                 </div>
 
                                 {/* Action */}
@@ -78,7 +78,7 @@ const Cart = () => {
                             <h3 className="text-lg font-serif font-bold mb-4">Order Summary</h3>
                             <div className="flex justify-between text-sm text-neutral-600">
                                 <span>Subtotal</span>
-                                <span>${cartTotal.toLocaleString()}</span>
+                                <span>₹{cartTotal.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between text-sm text-neutral-600">
                                 <span>Shipping</span>
@@ -86,7 +86,7 @@ const Cart = () => {
                             </div>
                             <div className="border-t border-neutral-200 pt-4 flex justify-between font-bold text-lg text-neutral-900">
                                 <span>Total</span>
-                                <span>${cartTotal.toLocaleString()}</span>
+                                <span>₹{cartTotal.toLocaleString()}</span>
                             </div>
 
                             <Link to="/checkout" className="block w-full">

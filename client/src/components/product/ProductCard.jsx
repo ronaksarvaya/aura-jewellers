@@ -45,7 +45,7 @@ const ProductCard = ({ product }) => {
                     <h3 className="text-base font-medium text-charcoal hover:text-gold-600 transition-colors font-serif tracking-wide">{product.name}</h3>
                 </Link>
                 <p className="mt-1 text-xs text-neutral-500 uppercase tracking-wider">{product.category}</p>
-                <p className="mt-2 text-sm font-bold text-charcoal">${product.price.toLocaleString()}</p>
+                <p className="mt-2 text-sm font-bold text-charcoal">₹{product.price.toLocaleString()}</p>
             </div>
         </div>
     );

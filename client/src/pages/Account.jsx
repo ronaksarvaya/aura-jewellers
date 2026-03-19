@@ -74,11 +74,11 @@ const Account = () => {
                                             <p className="font-medium text-sm">Ethereal Diamond Ring</p>
                                             <p className="text-xs text-neutral-500">Qty: 1</p>
                                         </div>
-                                        <div className="ml-auto font-medium text-sm">$1,250</div>
+                                        <div className="ml-auto font-medium text-sm">₹1,250</div>
                                     </div>
                                     <div className="mt-4 pt-4 border-t border-neutral-100 text-right">
                                         <span className="text-sm font-medium mr-2">Total:</span>
-                                        <span className="font-bold text-lg">$1,250</span>
+                                        <span className="font-bold text-lg">₹1,250</span>
                                     </div>
                                 </div>
                             </div>

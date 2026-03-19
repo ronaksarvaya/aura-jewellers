@@ -61,7 +61,7 @@ const GiftHamper = () => {
                                         </div>
                                         <div className="p-4 text-center">
                                             <h3 className="font-bold text-lg">{box.name}</h3>
-                                            <p className="text-neutral-500">+${box.price}</p>
+                                            <p className="text-neutral-500">+₹{box.price}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -94,7 +94,7 @@ const GiftHamper = () => {
                                             </div>
                                             <div className="p-4">
                                                 <h3 className="font-medium text-sm">{product.name}</h3>
-                                                <p className="text-neutral-500 text-sm">${product.price}</p>
+                                                <p className="text-neutral-500 text-sm">₹{product.price}</p>
                                             </div>
                                         </div>
                                     )
@@ -115,19 +115,19 @@ const GiftHamper = () => {
                             <div className="bg-neutral-50 p-6 rounded-sm text-left mb-8 space-y-4">
                                 <div className="flex justify-between font-medium">
                                     <span>Packaging: {selectedBox?.name}</span>
-                                    <span>${selectedBox?.price}</span>
+                                    <span>₹{selectedBox?.price}</span>
                                 </div>
                                 <div className="border-t border-neutral-200 pt-4 space-y-2">
                                     {selectedItems.map(item => (
                                         <div key={item.id} className="flex justify-between text-sm text-neutral-600">
                                             <span>{item.name}</span>
-                                            <span>${item.price}</span>
+                                            <span>₹{item.price}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <div className="border-t border-neutral-200 pt-4 flex justify-between font-bold text-lg">
                                     <span>Total</span>
-                                    <span>${(selectedBox?.price || 0) + selectedItems.reduce((acc, i) => acc + i.price, 0)}</span>
+                                    <span>₹{(selectedBox?.price || 0) + selectedItems.reduce((acc, i) => acc + i.price, 0)}</span>
                                 </div>
                             </div>
 

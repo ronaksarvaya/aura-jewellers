@@ -73,7 +73,7 @@ const ProductDetails = () => {
                                 </div>
                             </div>
                             <h1 className="text-4xl md:text-5xl font-serif font-medium mb-6 text-charcoal leading-tight">{product.name}</h1>
-                            <p className="text-2xl font-light text-charcoal mb-8">${product.price.toLocaleString()}</p>
+                            <p className="text-2xl font-light text-charcoal mb-8">₹{product.price.toLocaleString()}</p>
                             <p className="text-neutral-500 leading-relaxed mb-8 font-light">
                                 {product.description}
                             </p>
@@ -120,7 +120,7 @@ const ProductDetails = () => {
                                 <button onClick={() => setQuantity(quantity + 1)} className="px-5 py-4 hover:bg-neutral-50 transition">+</button>
                             </div>
                             <Button size="lg" className="flex-1 py-4 text-sm tracking-widest uppercase" onClick={() => addToCart(product, quantity, { size: selectedSize, metal: selectedMetal })}>
-                                Add to Cart - ${(product.price * quantity).toLocaleString()}
+                                Add to Cart - ₹{(product.price * quantity).toLocaleString()}
                             </Button>
                             <button className="p-4 border border-neutral-200 hover:border-charcoal transition-colors " title="Add to Wishlist">
                                 <FiHeart className="w-5 h-5" />
