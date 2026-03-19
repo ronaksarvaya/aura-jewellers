@@ -15,6 +15,14 @@ const PRODUCTS = [
     { id: 6, name: 'Crystal Studs', category: 'Earrings', price: 220, image: 'https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?q=80&w=2070&auto=format&fit=crop', isNew: false },
 ];
 
+const MENS_PRODUCTS = [
+    { id: 'm1', name: "Men's Classic Platinum Band", category: "Rings", price: 45000, image: "https://images.unsplash.com/photo-1598216398918-c2b3e8e775bc?q=80&w=2070&auto=format&fit=crop", isNew: true },
+    { id: 'm2', name: "Men's Onyx Signet Ring", category: "Rings", price: 28000, image: "https://images.unsplash.com/photo-1628105553181-b66a87b545d9?q=80&w=2070&auto=format&fit=crop", isNew: false },
+    { id: 'm3', name: "Men's Solid Gold Cuban Chain", category: "Necklaces", price: 95000, image: "https://images.unsplash.com/photo-1596700816828-56960ac96c31?q=80&w=1976&auto=format&fit=crop", isNew: true },
+    { id: 'm4', name: "Men's Leather & Silver Anchor Bracelet", category: "Bracelets", price: 4500, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop", isNew: false },
+    { id: 'm5', name: "Men's Brushed Platinum Cufflinks", category: "Sets", price: 12000, image: "https://images.unsplash.com/photo-1582213795328-3e41c46927d3?q=80&w=1974&auto=format&fit=crop", isNew: false }
+];
+
 const Shop = () => {
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [products, setProducts] = useState([]);
@@ -23,13 +31,18 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
+                if (genderMode === 'Men') {
+                    setProducts(MENS_PRODUCTS);
+                    return;
+                }
+
                 let url = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/products` : 'http://localhost:5000/api/products';
                 if (genderMode !== 'All') {
                     url += `?gender=${genderMode}`;
                 }
                 const response = await axios.get(url);
                 // Map API data to the format ProductCard expects
-                const formattedProducts = response.data.map(p => ({
+                let formattedProducts = response.data.map(p => ({
                     id: p._id,
                     name: p.name,
                     category: p.category,
@@ -37,6 +50,11 @@ const Shop = () => {
                     image: p.images && p.images.length > 0 ? p.images[0].url : 'https://placehold.co/400x400/e5e4e2/black?text=Product',
                     isNew: p.isNewArrival
                 }));
+                
+                if (genderMode === 'All') {
+                    formattedProducts = [...formattedProducts, ...MENS_PRODUCTS];
+                }
+
                 setProducts(formattedProducts);
             } catch (error) {
                 console.error('Error fetching products:', error);

@@ -5,7 +5,7 @@ const Product = require('./models/Product');
 const sampleProducts = [
     {
         name: "Classic Gold Solitaire Ring",
-        description: "A timeless elegant ring featuring a single brilliant-cut diamond set in 18k Gold.",
+        description: "Classic Gold Solitaire Ring.webp",
         price: 45000,
         category: "Rings",
         material: "Gold",
@@ -66,6 +66,7 @@ const sampleProducts = [
         description: "Set of 4 stackable bangles in 18k Rose Gold plating.",
         price: 6000,
         category: "Bangles",
+        gender: "Women",
         material: "Rose Gold",
         gemstone: "None",
         occasion: "Daily Wear",
@@ -82,19 +83,6 @@ const sampleProducts = [
         gemstone: "None",
         occasion: "Wedding",
         stock: 15,
-        images: [{ url: "https://placehold.co/400x400/e5e4e2/black?text=Men+Platinum+Band", alt: "Men Platinum Band" }]
-    },
-    {
-        name: "Women's Diamond Solitaire Necklace",
-        description: "Exquisite diamond solitaire necklace for women.",
-        price: 85000,
-        category: "Necklaces",
-        gender: "Women",
-        material: "Gold",
-        gemstone: "Diamond",
-        occasion: "Party",
-        stock: 10,
-        images: [{ url: "https://placehold.co/400x400/gold/white?text=Women+Diamond+Necklace", alt: "Women Diamond Necklace" }]
     }
 ];
 
@@ -109,11 +97,10 @@ await mongoose.connect(process.env.MONGO_URI, {
         });
         console.log('Connected to MongoDB for seeding...');
 
-        const count = await Product.countDocuments();
-        if (count > 0) {
-            console.log(`Database already has ${count} products. Skipping seed.`);
-            process.exit(0);
-        }
+        console.log('Connected to MongoDB for seeding...');
+
+        console.log('Clearing existing product catalog...');
+        await Product.deleteMany({});
 
         console.log('Seeding products...');
         await Product.insertMany(sampleProducts);
