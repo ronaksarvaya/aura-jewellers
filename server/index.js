@@ -42,10 +42,12 @@ connectDB();
 
 const productRoutes = require('./routes/productRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
     res.send('Aura Jewellery API is running...');
 });

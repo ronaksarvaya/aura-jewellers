@@ -4,11 +4,20 @@ import Input from '../components/common/Input';
 import { FiPackage, FiUser, FiHeart, FiLogOut, FiGift } from 'react-icons/fi';
 import { useHamper } from '../context/HamperContext';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Account = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const { savedHampers, deleteHamper } = useHamper();
     const { addToCart } = useCart();
+    const { logout, user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSignOut = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <div className="min-h-screen bg-neutral-50 py-12 md:py-20">
@@ -44,7 +53,7 @@ const Account = () => {
                                 <FiGift className="w-4 h-4" /> My Hampers
                             </button>
                             <div className="pt-4 border-t border-neutral-100 mt-2">
-                                <button className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 w-full">
+                                <button onClick={handleSignOut} className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 w-full text-left">
                                     <FiLogOut className="w-4 h-4" /> Sign Out
                                 </button>
                             </div>
@@ -57,9 +66,8 @@ const Account = () => {
                             <div className="space-y-8">
                                 <h2 className="text-xl font-serif font-bold border-b border-neutral-100 pb-4">Personal Information</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Input label="First Name" defaultValue="Jane" />
-                                    <Input label="Last Name" defaultValue="Doe" />
-                                    <Input label="Email" defaultValue="jane@example.com" disabled />
+                                    <Input label="Name" defaultValue={user?.name || "Jane Doe"} disabled />
+                                    <Input label="Email" defaultValue={user?.email || "jane@example.com"} disabled />
                                     <Input label="Phone" defaultValue="+1 555 000 0000" />
                                 </div>
                                 <Button>Save Changes</Button>

@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FiUsers, FiShoppingBag, FiGift, FiLogOut, FiDownload, FiSearch } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 
@@ -41,7 +42,38 @@ const MOCK_CUSTOMERS = [
 ];
 
 const Admin = () => {
+    const { token, handleAuthError } = useAuth();
     const [activeTab, setActiveTab] = useState('orders');
+
+    const [realCustomers, setRealCustomers] = useState([]);
+
+    useEffect(() => {
+        if (activeTab === 'customers' && token) {
+            fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/users`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) throw res;
+                    throw new Error('Failed to fetch');
+                }
+                return res.json();
+            })
+            .then(data => {
+                const formatted = data.map(u => ({
+                    name: u.name,
+                    email: u.email,
+                    registered: new Date(u.createdAt).toLocaleDateString(),
+                    lastLogin: 'Session Verified'
+                }));
+                setRealCustomers(formatted);
+            })
+            .catch(err => {
+                console.error(err);
+                handleAuthError(err);
+            });
+        }
+    }, [activeTab, token, handleAuthError]);
 
     // Order Filters State
     const [orderSearch, setOrderSearch] = useState('');
@@ -213,7 +245,7 @@ const Admin = () => {
                                     <h1 className="text-2xl font-serif font-bold">Registered Customers</h1>
                                     <p className="text-neutral-500 text-sm mt-1">Users currently registered on the platform</p>
                                 </div>
-                                <Button onClick={() => exportToCSV(MOCK_CUSTOMERS, 'aura_customers_report.csv')} className="flex items-center gap-2" size="sm">
+                                <Button onClick={() => exportToCSV(realCustomers, 'aura_customers_report.csv')} className="flex items-center gap-2" size="sm">
                                     <FiDownload /> Export Report
                                 </Button>
                             </div>
@@ -225,23 +257,27 @@ const Admin = () => {
                                             <th className="p-4">Customer</th>
                                             <th className="p-4">Email</th>
                                             <th className="p-4">Registered On</th>
-                                            <th className="p-4 text-right">Last Login</th>
+                                            <th className="p-4 text-right">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-sm">
-                                        {MOCK_CUSTOMERS.map((customer, i) => (
-                                            <tr key={i} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
-                                                <td className="p-4 font-medium flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
-                                                        {customer.name.charAt(0)}
-                                                    </div>
-                                                    <span className="text-charcoal">{customer.name}</span>
-                                                </td>
-                                                <td className="p-4 text-neutral-600">{customer.email}</td>
-                                                <td className="p-4 text-neutral-500">{customer.registered}</td>
-                                                <td className="p-4 text-neutral-500 text-right">{customer.lastLogin}</td>
-                                            </tr>
-                                        ))}
+                                        {realCustomers.length === 0 ? (
+                                            <tr><td colSpan="4" className="p-8 text-center text-neutral-500">Loading customers...</td></tr>
+                                        ) : (
+                                            realCustomers.map((customer, i) => (
+                                                <tr key={i} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
+                                                    <td className="p-4 font-medium flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                                                            {customer.name.charAt(0)}
+                                                        </div>
+                                                        <span className="text-charcoal">{customer.name}</span>
+                                                    </td>
+                                                    <td className="p-4 text-neutral-600">{customer.email}</td>
+                                                    <td className="p-4 text-neutral-500">{customer.registered}</td>
+                                                    <td className="p-4 text-neutral-500 text-right">{customer.lastLogin}</td>
+                                                </tr>
+                                            ))
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
