@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -24,24 +24,19 @@ const GiftHamper = () => {
         { id: 'box-2', name: 'Velvet Rose Box', price: 35, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop' }
     ];
 
+    const HARDCODED_PRODUCTS = [
+        { id: 'p1', name: 'Ethereal Diamond Ring', price: 1250, image: 'https://images.unsplash.com/photo-1589674668791-4889d2bba4c6?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p2', name: 'Golden Sun Necklace', price: 890, image:'https://images.unsplash.com/photo-1610223515982-5bae48b7c2c2?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p3', name: 'Pearl Drop Earrings', price: 450, image: 'https://plus.unsplash.com/premium_photo-1695792938561-e1123658a0ae?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p4', name: 'Sapphire Bracelet', price: 1500, image: 'https://images.unsplash.com/photo-1770722272510-ef28c6f57541?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p5', name: 'Vintage Gold Band', price: 650, image: 'https://images.unsplash.com/photo-1622398925373-3f91b1e275f5?q=80&w=874&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p6', name: 'Crystal Studs', price: 220, image: 'https://images.unsplash.com/photo-1769078595478-5f756986b818?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p7', name: 'Rose Gold Pendant', price: 540, image: 'https://images.unsplash.com/photo-1631965004544-1762fc696476?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'p8', name: 'Emerald Cut Ring', price: 2100, image: 'https://images.unsplash.com/photo-1685970732254-d2d1f43ddc7c?q=80&w=776&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+         ];
+
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                let url = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/products` : 'http://localhost:5000/api/products';
-                const response = await axios.get(url);
-                const formattedProducts = response.data.map(p => ({
-                    id: p._id,
-                    name: p.name,
-                    price: p.price,
-                    image: p.images && p.images.length > 0 ? p.images[0].url : 'https://placehold.co/400x400/e5e4e2/black?text=Product'
-                }));
-                // Show a mix of products for the hamper selection
-                setProducts(formattedProducts.slice(0, 9));
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
-        };
-        fetchProducts();
+        setProducts(HARDCODED_PRODUCTS);
     }, []);
 
     const toggleItem = (item) => {

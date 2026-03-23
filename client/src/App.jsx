@@ -13,6 +13,8 @@ import Account from './pages/Account';
 import GiftHamper from './pages/GiftHamper';
 import Support from './pages/Support';
 import Admin from './pages/Admin';
+import About from './pages/About';
+import Collections from './pages/Collections';
 import { AuthProvider } from './context/AuthContext';
 import RequireAuth from './components/common/RequireAuth';
 import RequireAdmin from './components/common/RequireAdmin';
@@ -49,6 +51,8 @@ function App() {
                   <Route path="/account" element={<Account />} />
                   <Route path="/gift-hamper" element={<GiftHamper />} />
                   <Route path="/support" element={<Support />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/collections" element={<Collections />} />
                 </Routes>
               </React.Fragment>
             </Layout>

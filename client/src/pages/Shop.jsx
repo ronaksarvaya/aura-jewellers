@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import FilterSidebar from '../components/shop/FilterSidebar';
 import ProductCard from '../components/product/ProductCard';
 import { FiFilter, FiX } from 'react-icons/fi';
 import Button from '../components/common/Button';
 
 // Mock Data with Reliable Images
-const PRODUCTS = [
-    { id: 1, name: 'Ethereal Diamond Ring', category: 'Rings', price: 1250, image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=2070&auto=format&fit=crop', isNew: true },
-    { id: 2, name: 'Golden Sun Necklace', category: 'Necklaces', price: 890, image: 'https://images.unsplash.com/photo-1599643477877-5313557d80fe?q=80&w=1974&auto=format&fit=crop', isNew: true },
-    { id: 3, name: 'Pearl Drop Earrings', category: 'Earrings', price: 450, image: 'https://images.unsplash.com/photo-1535632787350-4e48bc094aa9?q=80&w=1974&auto=format&fit=crop', isNew: false },
-    { id: 4, name: 'Sapphire Bracelet', category: 'Bracelets', price: 1500, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop', isNew: false },
-    { id: 5, name: 'Vintage Gold Band', category: 'Rings', price: 650, image: 'https://images.unsplash.com/photo-1603561591411-cd7eb5a1b5b3?q=80&w=2069&auto=format&fit=crop', isNew: false },
-    { id: 6, name: 'Crystal Studs', category: 'Earrings', price: 220, image: 'https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?q=80&w=2070&auto=format&fit=crop', isNew: false },
+const WOMENS_PRODUCTS = [
+    { id: 'p1', name: 'Ethereal Diamond Ring', category: 'Rings', price: 1250, image: 'https://images.unsplash.com/photo-1589674668791-4889d2bba4c6?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: true },
+    { id: 'p2', name: 'Golden Sun Necklace', category: 'Necklaces', price: 890, image: 'https://images.unsplash.com/photo-1610223515982-5bae48b7c2c2?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: true },
+    { id: 'p3', name: 'Pearl Drop Earrings', category: 'Earrings', price: 450, image: 'https://plus.unsplash.com/premium_photo-1695792938561-e1123658a0ae?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: false },
+    { id: 'p4', name: 'Sapphire Bracelet', category: 'Bracelets', price: 1500, image: 'https://images.unsplash.com/photo-1770722272510-ef28c6f57541?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: false },
+    { id: 'p5', name: 'Vintage Gold Band', category: 'Rings', price: 650, image: 'https://images.unsplash.com/photo-1622398925373-3f91b1e275f5?q=80&w=874&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: false },
+    { id: 'p6', name: 'Crystal Studs', category: 'Earrings', price: 220, image: 'https://images.unsplash.com/photo-1769078595478-5f756986b818?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: false },
+    { id: 'p7', name: 'Rose Gold Pendant', category: 'Necklaces', price: 540, image: 'https://images.unsplash.com/photo-1631965004544-1762fc696476?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: false },
+    { id: 'p8', name: 'Emerald Cut Ring', category: 'Rings', price: 2100, image: 'https://images.unsplash.com/photo-1685970732254-d2d1f43ddc7c?q=80&w=776&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', isNew: true }
 ];
 
 const MENS_PRODUCTS = [
-    { id: 'm1', name: "Men's Classic Platinum Band", category: "Rings", price: 45000, image: "https://images.unsplash.com/photo-1598216398918-c2b3e8e775bc?q=80&w=2070&auto=format&fit=crop", isNew: true },
-    { id: 'm2', name: "Men's Onyx Signet Ring", category: "Rings", price: 28000, image: "https://images.unsplash.com/photo-1628105553181-b66a87b545d9?q=80&w=2070&auto=format&fit=crop", isNew: false },
-    { id: 'm3', name: "Men's Solid Gold Cuban Chain", category: "Necklaces", price: 95000, image: "https://images.unsplash.com/photo-1596700816828-56960ac96c31?q=80&w=1976&auto=format&fit=crop", isNew: true },
-    { id: 'm4', name: "Men's Leather & Silver Anchor Bracelet", category: "Bracelets", price: 4500, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop", isNew: false },
-    { id: 'm5', name: "Men's Brushed Platinum Cufflinks", category: "Sets", price: 12000, image: "https://images.unsplash.com/photo-1582213795328-3e41c46927d3?q=80&w=1974&auto=format&fit=crop", isNew: false }
+    { id: 'm1', name: "Men's Classic Platinum Band", category: "Rings", price: 2500, image: "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", isNew: true },
+    { id: 'm2', name: "Men's Onyx Signet Ring", category: "Rings", price: 1200, image: "https://images.unsplash.com/photo-1612285127364-58ede3fa1686?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", isNew: false },
+    { id: 'm3', name: "Men's Solid Gold Cuban Chain", category: "Necklaces", price: 1720, image: "https://plus.unsplash.com/premium_photo-1678730056371-eff9c5356a48?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", isNew: true },
+    { id: 'm4', name: "Men's Leather & Silver Anchor Bracelet", category: "Bracelets", price: 1300, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop", isNew: false },
 ];
 
 const Shop = () => {
@@ -29,35 +30,14 @@ const Shop = () => {
     const [genderMode, setGenderMode] = useState('All');
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                if (genderMode === 'Men') {
-                    setProducts(MENS_PRODUCTS);
-                    return;
-                }
-
-                let url = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/products` : 'http://localhost:5000/api/products';
-                if (genderMode !== 'All') {
-                    url += `?gender=${genderMode}`;
-                }
-                const response = await axios.get(url);
-                // Map API data to the format ProductCard expects
-                let formattedProducts = response.data.map(p => ({
-                    id: p._id,
-                    name: p.name,
-                    category: p.category,
-                    price: p.price,
-                    image: p.images && p.images.length > 0 ? p.images[0].url : 'https://placehold.co/400x400/e5e4e2/black?text=Product',
-                    isNew: p.isNewArrival
-                }));
-                
-                if (genderMode === 'All') {
-                    formattedProducts = [...formattedProducts, ...MENS_PRODUCTS];
-                }
-
-                setProducts(formattedProducts);
-            } catch (error) {
-                console.error('Error fetching products:', error);
+        const fetchProducts = () => {
+            if (genderMode === 'Men') {
+                setProducts(MENS_PRODUCTS);
+            } else if (genderMode === 'Women') {
+                setProducts(WOMENS_PRODUCTS);
+            } else {
+                // All
+                setProducts([...WOMENS_PRODUCTS, ...MENS_PRODUCTS]);
             }
         };
 
