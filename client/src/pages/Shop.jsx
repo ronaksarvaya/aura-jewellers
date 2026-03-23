@@ -131,16 +131,7 @@ const Shop = () => {
                             )}
                         </div>
 
-                        {/* Pagination (Simple) */}
-                        <div className="mt-16 flex justify-center">
-                            <div className="flex gap-2">
-                                <Button variant="outline" size="sm" disabled>Previous</Button>
-                                <Button variant="primary" size="sm" className="w-10 h-10 p-0 flex items-center justify-center">1</Button>
-                                <Button variant="outline" size="sm" className="w-10 h-10 p-0 flex items-center justify-center border-transparent hover:bg-neutral-100">2</Button>
-                                <Button variant="outline" size="sm" className="w-10 h-10 p-0 flex items-center justify-center border-transparent hover:bg-neutral-100">3</Button>
-                                <Button variant="outline" size="sm">Next</Button>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
             </div>
